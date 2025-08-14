@@ -18,23 +18,18 @@ def clear_attachment_folder(folder_path="attachments"):
     print(f"All files cleared from '{folder_path}'")
 
 if __name__ == "__main__":
+
+    
     clear_attachment_folder("attachments")
     file_path = "Project Alpha – Weekly Update and Action Items.msg"
     email_data=read_mails.read_any_email(file_path)
 
     print("Recovered Mail is:")
-    print("Subject:", email_data['subject'])
-    print("From:", email_data['from'])
-    print("To:", email_data['to'])
-    print("Date:", email_data['date'])
-    print("Body:\n", email_data['body'])
-    print("Attachment report:\n", email_data['attachment'])
+    print("Body:\n", email_data.get('body'))
+    print("Attachment report:\n", email_data.get('attachment'))
 
     attachment_data=read_attachment_files.extract_all_files_from_folder("attachments")
     for file_data in attachment_data:
-        filename = file_data.get('filename')
         text_content = file_data.get('text')
-        
-        print(f"\n--- Text extracted from {filename} ---\n")
-        print(text_content)  # or print(text_content[:1000]) to limit
+        print(text_content)
         print("\n" + "="*40 + "\n")
