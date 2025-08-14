@@ -2,9 +2,10 @@ import os
 import pandas as pd
 from PyPDF2 import PdfReader
 from docx import Document
-import pytesseract
-from PIL import Image
+import easyocr
 import json
+import openpyxl
+
 
 def read_excel_file(file_path):
     try:
@@ -56,12 +57,11 @@ def read_doc_file(file_path):
         return f"Error reading DOC file: {err}"
 
 def read_image_file(file_path):
+    # Initialize EasyOCR without CUDA (CPU only)
+    ocr_reader = easyocr.Reader(['en'], gpu=False)  # set gpu=True for CUDA-enabled GPU
     try:
-        # Open image with PIL
-        img = Image.open(file_path)
-        # Use pytesseract to do OCR on the image
-        text = pytesseract.image_to_string(img)
-        return text
+        text_lines = ocr_reader.readtext(file_path, detail=0)
+        return "\n".join(text_lines)
     except Exception as err:
         return f"Error reading image file: {err}"
 
@@ -79,23 +79,20 @@ def read_file(file_path):
         return read_doc_file(file_path)
     elif ext in ['.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif']:
         return read_image_file(file_path)
+    
     else:
         return f"Unsupported file type: {ext}"
-
+    
 def extract_all_files_from_folder(folder_path="attachments"):
-    all_texts = {}
+    extracted_data = []
+    # Read all files one by one in attachments
     for fname in os.listdir(folder_path):
         fpath = os.path.join(folder_path, fname)
         if os.path.isfile(fpath):
             print(f"Processing {fname}...")
-            all_texts[fname] = read_file(fpath)
-    return all_texts
-
-if __name__ == "__main__":
-    attachments_folder = "attachments"
-    extracted_texts = extract_all_files_from_folder(attachments_folder)
-    for filename, text_content in extracted_texts.items():
-        print(f"\n--- Text extracted from {filename} ---\n")
-        print(text_content[:])
-        print("\n" + "="*40 + "\n")
-
+            text = read_file(fpath)
+            extracted_data.append({
+                "filename": fname,
+                "text": text
+            })
+    return extracted_data
