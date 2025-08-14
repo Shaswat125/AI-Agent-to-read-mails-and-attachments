@@ -6,6 +6,8 @@ import easyocr
 import json
 import openpyxl
 
+# This modules is capable in reading any kind of image but is slow without a GPU. This works with EasyOCR GPU based OCR
+# So if you have a GPU this works pretty fast.
 
 def read_excel_file(file_path):
     try:
@@ -82,7 +84,7 @@ def read_file(file_path):
     
     else:
         return f"Unsupported file type: {ext}"
-    
+
 def extract_all_files_from_folder(folder_path="attachments"):
     extracted_data = []
     # Read all files one by one in attachments
@@ -96,3 +98,18 @@ def extract_all_files_from_folder(folder_path="attachments"):
                 "text": text
             })
     return extracted_data
+
+
+if __name__ == "__main__":
+    # All kinds of attachments works seamlessly
+    attachments_folder = "Test All Kinds of Attachments"
+    extracted_texts = extract_all_files_from_folder(attachments_folder)
+    
+    for file_data in extracted_texts:
+        filename = file_data.get('filename')
+        text_content = file_data.get('text')
+        
+        print(f"\n--- Text extracted from {filename} ---\n")
+        print(text_content)
+        print("\n" + "="*40 + "\n")
+
