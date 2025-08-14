@@ -4,6 +4,46 @@ from email import policy
 from email.parser import BytesParser
 import extract_msg, re
 
+def clean_filename(name):
+    """Remove illegal characters and null bytes from filenames."""
+    if not name:
+        return "unknown"
+    name = name.replace('\x00', '')
+    return ''.join(c if c.isalnum() or c in (' ', '.', '_') else '_' for c in name)
+
+def extract_attachments(file_path, output_dir="attachments"):
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    ext = os.path.splitext(file_path)[1].lower()
+
+    if ext == '.eml':
+        with open(file_path, 'rb') as f:
+            msg = BytesParser(policy=policy.default).parse(f)
+
+        for part in msg.iter_attachments():
+            filename = clean_filename(part.get_filename())
+            if filename:
+                filepath = os.path.join(output_dir, filename)
+                with open(filepath, 'wb') as f_out:
+                    f_out.write(part.get_payload(decode=True))
+                print(f"[EML] Saved: {filename}")
+
+    elif ext == '.msg':
+        msg = extract_msg.Message(file_path)
+        for att in msg.attachments:
+            filename = clean_filename(att.longFilename or att.shortFilename)
+            filepath = os.path.join(output_dir, filename)
+            with open(filepath, 'wb') as f_out:
+                f_out.write(att.data)
+            print(f"[MSG] Saved: {filename}")
+
+    else:
+        print("Unsupported file format. Only .eml and .msg are supported.")
+        return "Attachments Extraction Failed"
+
+    return "Attachments Extracted Succesfully"
+
 def read_any_email(file_path, directory_attach="attachments"):
     ext = os.path.splitext(file_path)[1].lower()
 
@@ -49,12 +89,14 @@ def read_any_email(file_path, directory_attach="attachments"):
     else:
         raise ValueError(f"Unsupported file extension: {ext}")
 
+    attachments = extract_attachments(file_path, directory_attach)
     return {
         'subject': subject,
         'from': sender,
         'to': recipients,
         'date': date,
-        'body': body
+        'body': body,
+        'attachment':attachments
     }
 
 if __name__ == "__main__":
@@ -67,3 +109,4 @@ if __name__ == "__main__":
     print("To:", email_data['to'])
     print("Date:", email_data['date'])
     print("Body:\n", email_data['body'])
+    print("Attachment report:\n", email_data['attachment'])
