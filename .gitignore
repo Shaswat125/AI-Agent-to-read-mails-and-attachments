@@ -3,6 +3,15 @@ __pycache__/
 *.py[codz]
 *$py.class
 
+# Ignore email files
+*.eml
+*.msg
+
+# Ignore backup and sensitive folders
+emails/
+backups/
+attachments/
+
 # C extensions
 *.so
 
