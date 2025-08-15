@@ -7,6 +7,7 @@ __pycache__/
 *.eml
 *.msg
 *.env
+*.json
 
 # Ignore backup and sensitive folders
 emails/
