@@ -2,7 +2,7 @@ import read_attachment_files
 import read_mails
 import os
 import json
-# from open_ai_call import ChatGPTWrapper
+from open_ai_call import ChatGPTWrapper
 from jinja2 import Environment, FileSystemLoader
 
 def save_all_into_file(data, output_path):
@@ -26,22 +26,21 @@ if __name__ == "__main__":
     email_body=email_data.get('body')
 
     attachment_data=read_attachment_files.extract_all_files_from_folder("attachments")
-    print(type(email_data), type(attachment_data))
     # merge attachments
     attachment_merged=""
-
     for attachment in attachment_data:
         text_content = attachment.get('text')
         attachment_merged+=str(text_content)
         attachment_merged+=" - "
 
-    prompt=generate_prompt(email_body, attachment_merged)
-    print(prompt)
-    # save_all_into_file(email_data, "Email Data.json")
-    # save_all_into_file(attachment_data, "Attachment Data.json")
-    # wrapper = ChatGPTWrapper(model="gpt-3.5-turbo")
-    # response = wrapper.get_chat_response(
-    #     prompt="Tell me a joke",
-    #     system_prompt="You are a friendly and witty coder."
-    # )
-    # print(response)
+    engineered_prompt=generate_prompt(email_body, attachment_merged)
+    print(engineered_prompt)
+    save_all_into_file(email_data, "Email Data.json")
+    save_all_into_file(attachment_data, "Attachment Data.json")
+
+    wrapper = ChatGPTWrapper(model="gpt-3.5-turbo")
+    response = wrapper.get_chat_response(
+        prompt=engineered_prompt,
+        system_prompt="AI Assistant"
+    )
+    print(response)
