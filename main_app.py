@@ -41,6 +41,6 @@ if __name__ == "__main__":
     wrapper = ChatGPTWrapper(model="gpt-3.5-turbo")
     response = wrapper.get_chat_response(
         prompt=engineered_prompt,
-        system_prompt="AI Assistant"
+        system_prompt="You are a professional AI assistant for email replies. Use only the provided email and attachments to generate accurate, clear, and polite responses. Do not assume or hallucinate information. If data is missing, say so clearly."
     )
     print(response)
