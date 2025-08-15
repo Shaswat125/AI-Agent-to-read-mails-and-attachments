@@ -2,7 +2,8 @@ import read_attachment_files
 import read_mails
 import os
 import json
-from open_ai_call import ChatGPTWrapper
+# from open_ai_call import ChatGPTWrapper
+from jinja2 import Environment, FileSystemLoader
 
 def save_all_into_file(data, output_path):
     try:
@@ -12,44 +13,9 @@ def save_all_into_file(data, output_path):
         print(f"An Error Occuring while saving data: {e}")
 
 def generate_prompt(email_body, attachments):
-    prompt = f"""You are a precise and cautious assistant. Your task is to generate a response to the email shown below, using only the content provided in the email body and its attachments.
-
-        Rules:
-        - Do not use any information outside of what is explicitly provided.
-        - Do not make assumptions or generate content that is not grounded in the input.
-        - If critical information is missing or ambiguous, respond with:  
-        "The provided information is insufficient to respond accurately."
-        - Quote content directly from the email or attachments where appropriate.
-        - First, show your reasoning step-by-step.
-        - Then write the final response to the email.
-
-        ---
-
-        EMAIL BODY:
-        {email_body}
-
-        ---
-
-        ATTACHMENTS:
-
-        {attachments}
-
-        ...
-
-        ---
-
-        REASONING:
-        1. Identify the main intent or request in the email.
-        2. Locate supporting facts in the attachments.
-        3. Ensure all facts used are quoted or referenced directly from the content.
-        4. If you can answer based on available facts, continue. If not, stop and return the "insufficient info" message.
-
-        ---
-
-        FINAL RESPONSE:
-        [Write the complete, accurate reply to the email here. If data is missing, state that clearly.]
-        """
-    return prompt
+    env = Environment(loader=FileSystemLoader("prompts"))
+    template = env.get_template("email_prompt.j2")
+    return template.render(email_body=email_body, attachments=attachments)
 
 if __name__ == "__main__":
 
