@@ -44,3 +44,7 @@ if __name__ == "__main__":
         system_prompt="You are a professional AI assistant for email replies. Use only the provided email and attachments to generate accurate, clear, and polite responses. Do not assume or hallucinate information. If data is missing, say so clearly."
     )
     print(response)
+    response_json = json.dumps({
+        "email_response": response
+    }, ensure_ascii=False, indent=2)
+    save_all_into_file(response_json, "open ai response json Data.json")
