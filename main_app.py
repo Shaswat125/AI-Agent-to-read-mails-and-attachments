@@ -5,21 +5,25 @@ import json
 from open_ai_call import ChatGPTWrapper
 from utils import generate_prompt, save_as_json
 
-if __name__ == "__main__":
-    # Iterate for all mails in folder 
-    for filename in os.listdir("emails"):
+
+def respond_mails_AI_agent(mail_folder_path="emails"):
+
+    # Iterate for all mails in folder to read, mails and attachments 
+    # AI Agent to respond to mails
+
+    for filename in os.listdir(mail_folder_path):
         email_extensions = ('.eml', '.msg', '.mbox')
         if filename.endswith(email_extensions):
-            file_path = os.path.join("emails", filename)
+            file_path = os.path.join(mail_folder_path, filename)
             print(f"{filename}\n")
             read_att.clean_folder("attachments")
 
+            # read email body
             email_data=read_mails.read_any_email(file_path)
-            # get email body
             email_body=email_data.get('body')
 
+            # read attachments
             attachment_data=read_att.extract_all_files_from_folder("attachments")
-            # merge attachments
             attachment_merged=""
             for attachment in attachment_data:
                 text_content = attachment.get('text')
@@ -41,3 +45,6 @@ if __name__ == "__main__":
             #     "email_response": response
             # }, ensure_ascii=False, indent=2)
             # save_as_json(response_json, "open ai response json Data.json")
+
+if __name__ == "__main__":
+    respond_mails_AI_agent(mail_folder_path="emails")
