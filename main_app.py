@@ -8,7 +8,26 @@ from utils import generate_prompt, save_as_json
 # AI Agent to respond to mails
 def respond_mails_AI_agent(mail_folder_path="emails"):
 
-    # Iterate for all mails in folder to read, mails and attachments 
+    """
+    Processes all email files in a specified folder, extracts their content and attachments,
+    generates AI-based responses using OpenAI's GPT models, and saves the results.
+
+    Steps:
+    1. Iterates over all email files in the given folder (.eml, .msg, .mbox).
+    2. Extracts the email body and attachment text from each file.
+    3. Builds a structured prompt combining the email and attachment content.
+    4. Sends the prompt to OpenAI's ChatGPT model (e.g., GPT-3.5 or GPT-4).
+    5. Saves the original email data, attachment content, and AI response as separate JSON files.
+
+    Args:
+        mail_folder_path (str): Path to the folder containing email files. Default is "emails/".
+
+    Output:
+        - {email_name}_email_details.json: Parsed email metadata and body.
+        - {email_name}_attachment_details.json: Text content from all attachments.
+        - {email_name}_response_mail.json: AI-generated reply to the email.
+    """
+
     for filename in os.listdir(mail_folder_path):
         email_extensions = ('.eml', '.msg', '.mbox')
         if filename.endswith(email_extensions):
