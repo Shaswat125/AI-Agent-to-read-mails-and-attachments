@@ -9,7 +9,7 @@ import openpyxl
 # This modules is capable in reading any kind of image but is slow without a GPU. This works with EasyOCR GPU based OCR
 # So if you have a GPU this works pretty fast.
 
-def clear_all_files_folder(folder_path="attachments"):
+def clean_folder(folder_path="attachments"):
     if not os.path.exists(folder_path):
         print(f"Folder '{folder_path}' does not exist.")
         return

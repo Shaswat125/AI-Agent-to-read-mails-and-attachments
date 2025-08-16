@@ -1,11 +1,11 @@
-import read_attachment_files
+import read_attachment_files as read_att
 import read_mails
 import os
 import json
 from open_ai_call import ChatGPTWrapper
 from jinja2 import Environment, FileSystemLoader
 
-def save_all_into_file(data, output_path):
+def save_as_json(data, output_path):
     try:
        with open(output_path, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False, default=str)
@@ -24,33 +24,32 @@ if __name__ == "__main__":
         if filename.endswith(email_extensions):
             file_path = os.path.join("emails", filename)
             print(f"{filename}\n")
+            read_att.clean_folder("attachments")
 
-    # read_attachment_files.clear_all_files_folder("attachments")
-    # file_path = "emails/Project Alpha – Weekly Update and Action Items.msg"
-    # email_data=read_mails.read_any_email(file_path)
-    # # get email body
-    # email_body=email_data.get('body')
+            email_data=read_mails.read_any_email(file_path)
+            # get email body
+            email_body=email_data.get('body')
 
-    # attachment_data=read_attachment_files.extract_all_files_from_folder("attachments")
-    # # merge attachments
-    # attachment_merged=""
-    # for attachment in attachment_data:
-    #     text_content = attachment.get('text')
-    #     attachment_merged+=str(text_content)
-    #     attachment_merged+=" - "
+            attachment_data=read_att.extract_all_files_from_folder("attachments")
+            # merge attachments
+            attachment_merged=""
+            for attachment in attachment_data:
+                text_content = attachment.get('text')
+                attachment_merged+=str(text_content)
+                attachment_merged+=" - "
 
-    # engineered_prompt=generate_prompt(email_body, attachment_merged)
-    # print(engineered_prompt)
-    # save_all_into_file(email_data, "Email Data.json")
-    # save_all_into_file(attachment_data, "Attachment Data.json")
+            engineered_prompt=generate_prompt(email_body, attachment_merged)
+            print(engineered_prompt)
+            save_as_json(email_data, "Email Data.json")
+            save_as_json(attachment_data, "Attachment Data.json")
 
-    # wrapper = ChatGPTWrapper(model="gpt-3.5-turbo")
-    # response = wrapper.get_chat_response(
-    #     prompt=engineered_prompt,
-    #     system_prompt="You are a professional AI assistant for email replies. Use only the provided email and attachments to generate accurate, clear, and polite responses. Do not assume or hallucinate information. If data is missing, say so clearly."
-    # )
-    # print(response)
-    # response_json = json.dumps({
-    #     "email_response": response
-    # }, ensure_ascii=False, indent=2)
-    # save_all_into_file(response_json, "open ai response json Data.json")
+            # wrapper = ChatGPTWrapper(model="gpt-3.5-turbo")
+            # response = wrapper.get_chat_response(
+            #     prompt=engineered_prompt,
+            #     system_prompt="You are a professional AI assistant for email replies. Use only the provided email and attachments to generate accurate, clear, and polite responses. Do not assume or hallucinate information. If data is missing, say so clearly."
+            # )
+            # print(response)
+            # response_json = json.dumps({
+            #     "email_response": response
+            # }, ensure_ascii=False, indent=2)
+            # save_as_json(response_json, "open ai response json Data.json")
